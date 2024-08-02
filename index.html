@@ -1,2 +1,207 @@
-<h1> Is this thing on?</h1>
+<style>
+    .ts-quiz-container {
+        font-family: 'Arial', sans-serif;
+        color: #333;
+        line-height: 1.6;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff0f5;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+    .ts-quiz-container h2, .ts-quiz-container h3 {
+        color: #ff69b4;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    #ts-question-container {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .ts-quiz-container button {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        margin: 10px 0;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #f8e1e7;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s, transform 0.1s;
+    }
+    .ts-quiz-container button:hover {
+        background-color: #ffc0cb;
+        transform: translateY(-2px);
+    }
+    .ts-quiz-container button:disabled {
+        cursor: default;
+        transform: none;
+    }
+    #ts-next-btn, .ts-restart-btn {
+        background-color: #ff69b4;
+        color: white;
+        max-width: 200px;
+        margin: 20px auto;
+    }
+    #ts-next-btn:hover, .ts-restart-btn:hover {
+        background-color: #ff1493;
+    }
+    #ts-result-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
 
+<div class="ts-quiz-container">
+    <div id="ts-question-container"></div>
+    <button id="ts-next-btn" onclick="nextQuestion()" style="display:none;">Next Question</button>
+    <div id="ts-result-container"></div>
+</div>
+
+<script>
+    const quizData = [
+        {
+            question: "In which year was Taylor Swift born?",
+            options: ["1987", "1989", "1990", "1992"],
+            correct: "1989"
+        },
+        {
+            question: "What was Taylor Swift's first hit single?",
+            options: ["Love Story", "Tim McGraw", "Teardrops on My Guitar", "Our Song"],
+            correct: "Tim McGraw"
+        },
+        {
+            question: "Which of Taylor's albums won Album of the Year at the Grammys?",
+            options: ["Fearless", "1989", "Both Fearless and 1989", "Red"],
+            correct: "Both Fearless and 1989"
+        },
+        {
+            question: "What is Taylor Swift's lucky number?",
+            options: ["7", "13", "22", "89"],
+            correct: "13"
+        },
+        {
+            question: "Which song is NOT from Taylor Swift's '1989' album?",
+            options: ["Shake It Off", "Blank Space", "Wildest Dreams", "Look What You Made Me Do"],
+            correct: "Look What You Made Me Do"
+        },
+        {
+            question: "Who did Taylor Swift collaborate with on the song 'Everything Has Changed'?",
+            options: ["Ed Sheeran", "John Mayer", "Joe Alwyn", "Zayn Malik"],
+            correct: "Ed Sheeran"
+        },
+        {
+            question: "What is the name of Taylor Swift's first pop album?",
+            options: ["Red", "1989", "Speak Now", "Fearless"],
+            correct: "1989"
+        },
+        {
+            question: "Which of these is NOT one of Taylor Swift's cats?",
+            options: ["Meredith Grey", "Olivia Benson", "Benjamin Button", "Kitty Purry"],
+            correct: "Kitty Purry"
+        },
+        {
+            question: "What is the title of Taylor Swift's Netflix documentary?",
+            options: ["Reputation", "Lover", "Miss Americana", "Folklore"],
+            correct: "Miss Americana"
+        },
+        {
+            question: "Which song did Taylor Swift re-record first as part of her plan to re-record her first six albums?",
+            options: ["Love Story", "Wildest Dreams", "Fearless", "We Are Never Ever Getting Back Together"],
+            correct: "Love Story"
+        },
+        {
+            question: "Which award show did Kanye West famously interrupt Taylor Swift?",
+            options: ["Grammy Awards", "American Music Awards", "MTV Video Music Awards", "Billboard Music Awards"],
+            correct: "MTV Video Music Awards"
+        }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function displayQuestion() {
+        const questionContainer = document.getElementById("ts-question-container");
+        const question = quizData[currentQuestion];
+        
+        questionContainer.innerHTML = `
+            <h3>Question ${currentQuestion + 1} of ${quizData.length}</h3>
+            <p>${question.question}</p>
+            ${question.options.map(option => `
+                <button onclick="checkAnswer('${option}')">${option}</button>
+            `).join("")}
+        `;
+    }
+
+    function checkAnswer(selectedAnswer) {
+        const question = quizData[currentQuestion];
+        const buttons = document.querySelectorAll('#ts-question-container button');
+        
+        buttons.forEach(button => {
+            button.disabled = true;
+            if (button.textContent === question.correct) {
+                button.style.backgroundColor = '#4CAF50';
+                button.style.color = 'white';
+            } else if (button.textContent === selectedAnswer && selectedAnswer !== question.correct) {
+                button.style.backgroundColor = '#f44336';
+                button.style.color = 'white';
+            }
+        });
+
+        if (selectedAnswer === question.correct) {
+            score++;
+        }
+
+        document.getElementById('ts-next-btn').style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQuestion++;
+        if (currentQuestion < quizData.length) {
+            displayQuestion();
+            document.getElementById('ts-next-btn').style.display = 'none';
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        const resultContainer = document.getElementById("ts-result-container");
+        const questionContainer = document.getElementById("ts-question-container");
+        const nextButton = document.getElementById("ts-next-btn");
+        const percentage = (score / quizData.length) * 100;
+
+        let message;
+
+        if (percentage === 100) {
+            message = "Wow! You're a true Swiftie! Your knowledge of Taylor Swift is unmatched!";
+        } else if (percentage >= 75) {
+            message = "Great job! You really know your Taylor Swift trivia!";
+        } else if (percentage >= 50) {
+            message = "Not bad! You've got a good grasp on Taylor Swift facts.";
+        } else {
+            message = "Looks like you might need to listen to more Taylor Swift! Keep exploring her music and story!";
+        }
+
+        questionContainer.style.display = 'none';
+        nextButton.style.display = 'none';
+        resultContainer.innerHTML = `
+            <h3>Quiz Completed!</h3>
+            <p>You scored ${score} out of ${quizData.length}!</p>
+            <p>${message}</p>
+            <button class="ts-restart-btn" onclick="restartQuiz()">Take the Quiz Again</button>
+        `;
+    }
+
+    function restartQuiz() {
+        currentQuestion = 0;
+        score = 0;
+        document.getElementById("ts-result-container").innerHTML = '';
+        document.getElementById("ts-question-container").style.display = 'block';
+        displayQuestion();
+    }
+
+    displayQuestion();
+</script>
